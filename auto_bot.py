@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 
 TOKEN = os.getenv("TOKEN")
-CHANNEL_2_ID = -100XXXXXXXXXX   # yahan apna 2nd channel ID daal
+CHANNEL_2_ID = -1002192056669  
 
 counter = 1
 
