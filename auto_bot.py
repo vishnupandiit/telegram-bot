@@ -1,14 +1,15 @@
 import re
 import os
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 
 TOKEN = os.getenv("TOKEN")
-CHANNEL_2_ID = -1002192056669  
+CHANNEL_2_ID = -1002192056669  # apna channel id
 
 counter = 1
 
-# 🔥 SET COMMAND (manual numbering)
+# 🔥 SET COMMAND
 async def set_counter(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global counter
     try:
@@ -17,66 +18,45 @@ async def set_counter(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except:
         await update.message.reply_text("❌ Use like: /set 5")
 
-# 🔥 MAIN BOT FUNCTION
+# 🔥 MAIN FUNCTION
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global counter
 
     if update.channel_post:
         post = update.channel_post
 
-        # caption ya text
         text = post.caption or post.text or ""
-
-        # username replace
         new_text = re.sub(r"@\w+", "@LearnWithVishnu", text)
 
-        # link create
         chat_id = post.chat_id
         message_id = post.message_id
+
         link = f"https://t.me/c/{str(chat_id)[4:]}/{message_id}"
 
         final_text = f"{counter}. {new_text}\n\n{link}\n\n@LearnWithVishnu ✔️"
 
-        # 📸 PHOTO HANDLE
         if post.photo:
-            photo = post.photo[-1].file_id
-            await context.bot.send_photo(
-                chat_id=CHANNEL_2_ID,
-                photo=photo,
-                caption=final_text
-            )
+            await context.bot.send_photo(CHANNEL_2_ID, post.photo[-1].file_id, caption=final_text)
 
-        # 🎥 VIDEO HANDLE
         elif post.video:
-            video = post.video.file_id
-            await context.bot.send_video(
-                chat_id=CHANNEL_2_ID,
-                video=video,
-                caption=final_text
-            )
+            await context.bot.send_video(CHANNEL_2_ID, post.video.file_id, caption=final_text)
 
-        # 📄 DOCUMENT HANDLE
         elif post.document:
-            doc = post.document.file_id
-            await context.bot.send_document(
-                chat_id=CHANNEL_2_ID,
-                document=doc,
-                caption=final_text
-            )
+            await context.bot.send_document(CHANNEL_2_ID, post.document.file_id, caption=final_text)
 
-        # 📝 TEXT ONLY
         else:
-            await context.bot.send_message(
-                chat_id=CHANNEL_2_ID,
-                text=final_text
-            )
+            await context.bot.send_message(CHANNEL_2_ID, final_text)
 
         counter += 1
 
-# 🚀 RUN BOT
-app = ApplicationBuilder().token(TOKEN).build()
+# 🚀 RUN BOT (FIXED FOR RENDER)
+async def main():
+    app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(CommandHandler("set", set_counter))
-app.add_handler(MessageHandler(filters.ALL, handle))
+    app.add_handler(CommandHandler("set", set_counter))
+    app.add_handler(MessageHandler(filters.ALL, handle))
 
-app.run_polling()
+    await app.run_polling()
+
+if __name__ == "__main__":
+    asyncio.run(main())
