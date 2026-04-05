@@ -5,20 +5,18 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, CommandHandler
 
 TOKEN = os.getenv("TOKEN")
-CHANNEL_2_ID = -1002192056669  # apna channel id
+CHANNEL_2_ID = -1002192056669
 
 counter = 1
 
-# 🔥 SET COMMAND
 async def set_counter(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global counter
     try:
         counter = int(context.args[0])
         await update.message.reply_text(f"✅ Counter set to {counter}")
     except:
-        await update.message.reply_text("❌ Use like: /set 5")
+        await update.message.reply_text("❌ Use: /set 5")
 
-# 🔥 MAIN FUNCTION
 async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global counter
 
@@ -49,7 +47,6 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         counter += 1
 
-# 🚀 RUN BOT (FIXED FOR RENDER)
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
